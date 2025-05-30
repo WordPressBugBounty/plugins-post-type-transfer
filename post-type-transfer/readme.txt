@@ -1,11 +1,12 @@
 === Post Type Transfer ===
-Contributors: dilipbheda, krishaweb, pratikgandhi
-Tags: post type switch, post type swicher, type, types
-Requires at least: 4.4
-Tested up to: 6.1
-Stable tag: 1.4
-License: GPLv2 or later
-License URI: https://www.gnu.org/licenses/gpl-2.0.html
+Contributors: dilipbheda, krishaweb, pratikgandhi, girishpanchal
+Tags: post type switch, post type switcher, post types ACF, post type, post transfer
+Requires at least: 6.6
+Tested up to: 6.8
+Stable tag: 1.5
+Copyright: (c) 2012-2025 KrishaWeb Technologies PVT LTD (info@krishaweb.com)
+License: GPLv3 or later
+License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
 A simple way to change a post's post-type in WordPress
 
@@ -54,7 +55,11 @@ Great! I’d love to hear from you at <a href="mailto:support@krishaweb.com">sup
 
 == Changelog ==
 
-= 1.3 =
+= 1.5 =
+* Code quality improvements
+* Tested up to 6.8
+
+= 1.4 =
 * Fixed: Compatibility with ACF Pro repeater field
 
 = 1.3 =

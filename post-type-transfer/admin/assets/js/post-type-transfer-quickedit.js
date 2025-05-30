@@ -27,3 +27,22 @@ if ( inlineEditPost ) {
 } else {
 	jQuery( ptt_bulk_edit );
 }
+
+// Remove Post row after ptt process is completed.
+(function($) {
+	jQuery(document).ajaxSuccess( function( event, xhr, settings ) {
+		const params = new URLSearchParams( settings.data );
+		if ( settings.data && settings.data.indexOf('action=inline-save') !== -1 ) {
+			const postId = params.get('post_ID');
+			if ( postId ) {
+				const $editRow = $('#edit-' + postId);
+				const $postRow = $('#post-' + postId);
+				// New selected post type from custom field
+				const selectedPostType = params.get('post_type_transfer_types');
+				if ( selectedPostType !== typenow ) {
+					location.reload();
+				}
+			}
+		}
+	});
+})(jQuery);

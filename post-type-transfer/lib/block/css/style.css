@@ -12,3 +12,14 @@
  	position: absolute;
  	margin: 3px;
  }
+ #ptt-gutenberg .postbox-header h2.hndle {
+ 	padding: 8px 15px;
+ }
+
+ #ptt-gutenberg .inside {
+ 	width: 80%;
+ 	padding-left: 5px;
+ }
+ #ptt-gutenberg .inside .post-type-transfer #post-type-select{
+ 	margin-top: 10px ;
+ }

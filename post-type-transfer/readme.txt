@@ -1,6 +1,6 @@
 === Post Type Transfer ===
 Contributors: dilipbheda, krishaweb, pratikgandhi, girishpanchal
-Tags: post type switch, post type switcher, post types ACF, post type, post transfer
+Tags: custom post types, post type, taxonomies, acf, page
 Requires at least: 6.6
 Tested up to: 6.8
 Stable tag: 1.5

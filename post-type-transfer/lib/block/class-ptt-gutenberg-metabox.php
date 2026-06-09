@@ -2,7 +2,7 @@
 /**
  * Post type transfer gutenberg class file.
  *
- * @package WordPress
+ * @package Post_Type_Transfer
  */
 
 // If check class exist or not.
@@ -10,7 +10,7 @@ if ( ! class_exists( 'PTT_Gutenberg_Metabox' ) ) {
 	/**
 	 * Post type transfer gutenberg class.
 	 */
-	class PTT_Gutenberg_Metabox extends Post_Type_Transfer {
+	class PTT_Gutenberg_Metabox {
 		/**
 		 * Calling class construct.
 		 */
@@ -27,7 +27,7 @@ if ( ! class_exists( 'PTT_Gutenberg_Metabox' ) ) {
 			add_meta_box(
 				'ptt-gutenberg',
 				__( 'Post Types', 'post-type-transfer' ),
-				array( $this, 'ptt_post_metabox' ),
+				array( 'Post_Type_Transfer', 'ptt_post_metabox' ),
 				null,
 				'side',
 				'high',

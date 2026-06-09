@@ -1,63 +1,46 @@
 ( function ( $ ) {
-	// Global variable
-	var reload_check = false;
-	var publish_button_click = false;
-		// Set interval on publish button click
-		add_publish_button_click = setInterval(function() {
-			// Get editor button
-			$publish_button = $( '.edit-post-header__settings .editor-post-publish-button' );
-			
-			if ( $publish_button && ! publish_button_click ) {
-				
-				publish_button_click = true;
-				// Click publish button
-				$publish_button.on('click', function() {
+	'use strict';
 
-					// Set reloader interval
-					var reloader = setInterval(function() {
-						
-						if ( ! reload_check ) {
-							reload_check = true;
-						}
-							
-						// Gutenburg core editor HOOKS.
-						postsaving = wp.data.select('core/editor').isSavingPost();
-						autosaving = wp.data.select('core/editor').isAutosavingPost();
-						success = wp.data.select('core/editor').didPostSaveRequestSucceed();
-						// End
-						// Check post saving status.
-						if ( postsaving || autosaving || ! success ) {
-							classic_reload_check = false;
-							return;
-						}
-						// Clear iterval
-						clearInterval( reloader );
-						// Get metabox value
-						var SelectPostTypeLabel = $.trim( $( '#post-type-select option:selected' ).text() ) || '';
-						var SelectPostType = $.trim( $( '#post-type-select option:selected' ).val() ) || '';
-						var SameTaxonomy = $.trim( $( '#same_taxonomy option:selected' ).val() ) || '' ;
-						var SelectedLabel = $.trim( $( '#post-type-display' ).text() ) || '';
+	let isSavingPost = false;
 
-						if ( $( '#post-type-display' ).text() == SelectPostTypeLabel ) return;
+	// Subscribe to Gutenberg editor state so we detect save completion without polling.
+	wp.data.subscribe( function () {
+		const editor = wp.data.select( 'core/editor' );
+		const currentlySaving = editor.isSavingPost() && ! editor.isAutosavingPost();
 
-						// If check value is not empty.
-						if ( SelectPostType !='' || SameTaxonomy !='' ) {
-							// Sweet alert box.
-							swal({
-								title:'Post Transfer To "' + SelectPostTypeLabel + '"',
-								icon: 'success',
-								button: 'Click View Post',
-								closeOnClickOutside: false,
-								closeOnEsc: false,
-							}).then( function() {
-								window.location.href = window.location.href;
-							} );
-						}
-					}, 1000);
+		// Rising edge: a save just started.
+		if ( currentlySaving && ! isSavingPost ) {
+			isSavingPost = true;
+			return;
+		}
 
-				} );
+		// Falling edge: save completed.
+		if ( ! currentlySaving && isSavingPost ) {
+			isSavingPost = false;
 
+			if ( ! editor.didPostSaveRequestSucceed() ) {
+				return;
 			}
 
-		}, 500);
+			const selectPostTypeLabel = $.trim( $( '#post_type_transfer_types option:selected' ).text() ) || '';
+			const selectPostType      = $.trim( $( '#post_type_transfer_types option:selected' ).val() ) || '';
+			const currentLabel        = $.trim( $( '#post-type-display' ).text() ) || '';
+
+			if ( currentLabel === selectPostTypeLabel ) {
+				return;
+			}
+
+			if ( selectPostType !== '' ) {
+				swal( {
+					title: 'Post Transfer To "' + selectPostTypeLabel + '"',
+					icon: 'success',
+					button: 'Click View Post',
+					closeOnClickOutside: false,
+					closeOnEsc: false,
+				} ).then( function () {
+					window.location.reload();
+				} );
+			}
+		}
+	} );
 } )( jQuery );

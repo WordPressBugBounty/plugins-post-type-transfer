@@ -17,8 +17,10 @@
  }
 
  #ptt-gutenberg .inside {
- 	width: 80%;
- 	padding-left: 5px;
+    width: 100%;
+    max-width: 250px;
+    padding: 0;
+    box-sizing: border-box;
  }
  #ptt-gutenberg .inside .post-type-transfer #post-type-select{
  	margin-top: 10px ;

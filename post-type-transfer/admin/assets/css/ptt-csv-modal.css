@@ -1,0 +1,216 @@
+/* ── Modal overlay ────────────────────────────────────────────────────────── */
+#ptt-import-modal {
+	display: none;
+	position: fixed;
+	inset: 0;
+	z-index: 100000;
+}
+
+#ptt-import-modal.ptt-is-open {
+	display: block;
+}
+
+.ptt-modal-overlay {
+	position: fixed;
+	inset: 0;
+	background: rgba(0, 0, 0, .55);
+	animation: pttFadeIn .15s ease;
+}
+
+/* ── Modal dialog ─────────────────────────────────────────────────────────── */
+.ptt-modal-wrap {
+	position: fixed;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	width: 500px;
+	max-width: calc(100vw - 40px);
+	background: #fff;
+	border-radius: 4px;
+	box-shadow: 0 8px 40px rgba(0, 0, 0, .25);
+	display: flex;
+	flex-direction: column;
+	animation: pttSlideUp .18s ease;
+}
+
+/* ── Header ───────────────────────────────────────────────────────────────── */
+.ptt-modal-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 14px 20px;
+	border-bottom: 1px solid #dcdcde;
+}
+
+.ptt-modal-header h2 {
+	margin: 0;
+	font-size: 15px;
+	font-weight: 600;
+	color: #1d2327;
+	line-height: 1.4;
+}
+
+.ptt-modal-subtitle {
+	font-weight: 400;
+	color: #50575e;
+}
+
+.ptt-modal-x {
+	background: none;
+	border: none;
+	cursor: pointer;
+	padding: 4px 6px;
+	font-size: 16px;
+	line-height: 1;
+	color: #787c82;
+	border-radius: 3px;
+	transition: color .15s, background .15s;
+}
+
+.ptt-modal-x:hover {
+	color: #1d2327;
+	background: #f0f0f1;
+}
+
+.ptt-modal-x:focus {
+	outline: 2px solid #2271b1;
+	outline-offset: 1px;
+}
+
+/* ── Body ─────────────────────────────────────────────────────────────────── */
+.ptt-modal-body {
+	padding: 20px;
+}
+
+/* ── Drop zone ────────────────────────────────────────────────────────────── */
+.ptt-drop-zone {
+	position: relative;
+	border: 2px dashed #c3c4c7;
+	border-radius: 4px;
+	padding: 36px 20px 28px;
+	text-align: center;
+	cursor: pointer;
+	transition: border-color .2s, background .2s;
+	outline: none;
+}
+
+.ptt-drop-zone:hover,
+.ptt-drop-zone:focus,
+.ptt-drop-zone.ptt-dragover {
+	border-color: #2271b1;
+	background: #f0f6fc;
+}
+
+.ptt-drop-zone input[type="file"] {
+	position: absolute;
+	inset: 0;
+	opacity: 0;
+	width: 100%;
+	height: 100%;
+	cursor: pointer;
+}
+
+.ptt-drop-icon {
+	font-size: 36px !important;
+	width: 36px !important;
+	height: 36px !important;
+	color: #a7aaad;
+	display: block;
+	margin: 0 auto 10px;
+	transition: color .2s;
+}
+
+.ptt-drop-zone:hover .ptt-drop-icon,
+.ptt-drop-zone:focus .ptt-drop-icon,
+.ptt-drop-zone.ptt-dragover .ptt-drop-icon {
+	color: #2271b1;
+}
+
+.ptt-drop-primary {
+	margin: 0 0 4px;
+	font-size: 13px;
+	color: #1d2327;
+}
+
+.ptt-drop-hint {
+	margin: 0;
+	font-size: 12px;
+	color: #787c82;
+}
+
+.ptt-file-badge[hidden] {
+	display: none;
+}
+
+.ptt-file-badge {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	margin-top: 10px;
+	padding: 8px 12px;
+	background: #f0f6fc;
+	border: 1px solid #72aee6;
+	border-radius: 3px;
+	font-size: 13px;
+	color: #2271b1;
+}
+
+.ptt-file-badge .dashicons {
+	font-size: 18px !important;
+	width: 18px !important;
+	height: 18px !important;
+	flex-shrink: 0;
+}
+
+#ptt-file-name {
+	flex: 1;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+#ptt-file-clear {
+	background: none;
+	border: none;
+	cursor: pointer;
+	padding: 0 2px;
+	font-size: 14px;
+	color: #2271b1;
+	line-height: 1;
+	flex-shrink: 0;
+}
+
+#ptt-file-clear:hover {
+	color: #d63638;
+}
+
+/* ── Hint text ────────────────────────────────────────────────────────────── */
+p.ptt-modal-hint {
+	margin: 12px 0 0;
+	font-size: 12px;
+	line-height: 1.5;
+	color: #50575e;
+}
+
+/* ── Footer ───────────────────────────────────────────────────────────────── */
+.ptt-modal-footer {
+	display: flex;
+	align-items: center;
+	justify-content: flex-end;
+	gap: 8px;
+	padding: 12px 20px;
+	border-top: 1px solid #dcdcde;
+	background: #f6f7f7;
+	border-radius: 0 0 4px 4px;
+}
+
+/* ── Animations ───────────────────────────────────────────────────────────── */
+@keyframes pttFadeIn {
+	from { opacity: 0; }
+	to   { opacity: 1; }
+}
+
+@keyframes pttSlideUp {
+	from { opacity: 0; transform: translate(-50%, calc(-50% + 12px)); }
+	to   { opacity: 1; transform: translate(-50%, -50%); }
+}

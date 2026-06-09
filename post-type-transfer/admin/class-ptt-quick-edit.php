@@ -2,7 +2,7 @@
 /**
  * Post type transfer quick edit class file.
  *
- * @package WordPress
+ * @package Post_Type_Transfer
  */
 
 // If check class exists or not.
@@ -10,7 +10,7 @@ if ( ! class_exists( 'PTT_Quick_Edit' ) ) {
 	/**
 	 * Post type transfer quick edit class.
 	 */
-	class PTT_Quick_Edit extends Post_Type_Transfer {
+	class PTT_Quick_Edit {
 
 		/**
 		 * Calling class construct.
@@ -21,9 +21,24 @@ if ( ! class_exists( 'PTT_Quick_Edit' ) ) {
 			add_action( 'manage_pages_columns', array( $this, 'ptt_add_column' ) );
 			add_action( 'manage_posts_custom_column', array( $this, 'ptt_manage_column' ), 10, 2 );
 			add_action( 'manage_pages_custom_column', array( $this, 'ptt_manage_column' ), 10, 2 );
+			// CPT columns registered dynamically once the screen is known.
+			add_action( 'current_screen', array( $this, 'ptt_register_cpt_columns' ) );
 			// Quick Edit.
 			add_action( 'quick_edit_custom_box', array( $this, 'ptt_quick_edit' ) );
 			add_action( 'admin_enqueue_scripts', array( $this, 'ptt_quick_edit_script' ) );
+		}
+
+		/**
+		 * Register column hooks for non-built-in post types.
+		 *
+		 * @param WP_Screen $screen Current admin screen.
+		 */
+		public function ptt_register_cpt_columns( $screen ) {
+			if ( 'edit' !== $screen->base || empty( $screen->post_type ) || in_array( $screen->post_type, array( 'post', 'page' ), true ) ) {
+				return;
+			}
+			add_filter( "manage_{$screen->post_type}_posts_columns", array( $this, 'ptt_add_column' ) );
+			add_action( "manage_{$screen->post_type}_custom_column", array( $this, 'ptt_manage_column' ), 10, 2 );
 		}
 
 		/**
@@ -99,17 +114,12 @@ if ( ! class_exists( 'PTT_Quick_Edit' ) ) {
 		 * @param boolean $bulk Check for bulk.
 		 */
 		public function ptt_select_box( $bulk = false ) {
-			$selected = '';
 			// Get current post type.
 			$post_type = get_post_type();
 			// Get all post type objects.
-			$get_all_post_types = $this->ptt_get_all_post_types();
+			$get_all_post_types = Post_Type_Transfer::ptt_get_all_post_types();
 			// Exclude post data.
-			// @phpstan-ignore-next-line.
-			$exclude_post_data = $this->ptt_exclude_post_type( $get_all_post_types );
-			// Start an output buffer.
-			// Output.
-			ob_start();
+			$exclude_post_data = Post_Type_Transfer::ptt_exclude_post_type( $get_all_post_types );
 			?>
 			<select name="post_type_transfer_types" id="post_type_transfer_types">
 				<?php
@@ -126,33 +136,19 @@ if ( ! class_exists( 'PTT_Quick_Edit' ) ) {
 					if ( ! current_user_can( $post_types->cap->publish_posts ) ) :
 						continue;
 					endif;
-					// Only select if not bulk.
-					if ( false === $bulk ) :
-						// @phpstan-ignore-next-line.
-						$selected = selected( $post_type, $post_type_key );
-					endif;
-					// Output option.
 					?>
-					<?php // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
-					<option value="<?php echo esc_attr( $post_types->name ); ?>" <?php echo $selected; // Do not escape. ?>>	<?php echo esc_html( $post_types->labels->singular_name ); ?>
+					<option value="<?php echo esc_attr( $post_types->name ); ?>" 
+					<?php
+					if ( false === $bulk ) {
+						selected( $post_type, $post_type_key ); }
+					?>
+					><?php echo esc_html( $post_types->labels->singular_name ); ?>
 					</option>
 					<?php
-						endforeach;
+				endforeach;
 				?>
-				</select>
-				<?php
-				$allowed_html = array(
-					'select' => array(
-						'name' => true,
-						'id'   => true,
-					),
-					'option' => array(
-						'value'    => true,
-						'selected' => true,
-					),
-				);
-				// Output the current buffer.
-				echo wp_kses( ob_get_clean(), $allowed_html );
+			</select>
+			<?php
 		}
 	}
 }

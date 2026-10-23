@@ -19,7 +19,7 @@
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
-define( 'POST_TYPE_TRANSFER_VERSION', '1.5' );
+define( 'POST_TYPE_TRANSFER_VERSION', '1.6' );
 require_once plugin_dir_path( __FILE__ ) . 'admin/class-post-type-transfer.php';
 require_once plugin_dir_path( __FILE__ ) . 'admin/class-ptt-quick-edit.php';
 require_once plugin_dir_path( __FILE__ ) . 'admin/class-ptt-review-notice.php';

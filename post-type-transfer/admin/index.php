@@ -1,2 +1,2 @@
-<?php // phpcs:ignoreFile 
+<?php // phpcs:ignoreFile
 // Slience is golden

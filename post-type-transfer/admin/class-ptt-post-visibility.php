@@ -5,6 +5,10 @@
  * @package Post_Type_Transfer
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 if ( ! class_exists( 'PTT_Post_Visibility' ) ) {
 	/**
 	 * Handles per-post visibility restrictions.
@@ -12,6 +16,8 @@ if ( ! class_exists( 'PTT_Post_Visibility' ) ) {
 	class PTT_Post_Visibility {
 
 		const META_PREFIX = '_ptt_hide_';
+
+		const META_COMPARE_NOT_EXISTS = 'NOT EXISTS';
 
 		const OPTIONS = array(
 			'redirect_404'   => 'Redirect 404 page',
@@ -31,6 +37,23 @@ if ( ! class_exists( 'PTT_Post_Visibility' ) ) {
 		 * Constructor.
 		 */
 		public function __construct() {
+			// Deferred so a theme's functions.php can disable the feature via the filter.
+			add_action( 'after_setup_theme', array( $this, 'register_hooks' ) );
+		}
+
+		/**
+		 * Register the visibility hooks unless the feature is disabled.
+		 */
+		public function register_hooks() {
+			/**
+			 * Filters whether the post visibility feature is enabled.
+			 *
+			 * @param bool $enabled Whether post visibility is enabled. Default true.
+			 */
+			if ( ! apply_filters( 'ptt_enable_post_visibility', true ) ) {
+				return;
+			}
+
 			add_action( 'add_meta_boxes', array( $this, 'register_meta_box' ), 10, 1 );
 			add_action( 'save_post', array( $this, 'save_meta' ) );
 			add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_assets' ) );
@@ -194,13 +217,79 @@ if ( ! class_exists( 'PTT_Post_Visibility' ) ) {
 		 * @return array
 		 */
 		public function filter_recent_posts_widget( $args ) {
-			$meta_query         = isset( $args['meta_query'] ) ? (array) $args['meta_query'] : array();
-			$meta_query[]       = array(
-				'key'     => self::META_PREFIX . 'recent_posts',
-				'compare' => 'NOT EXISTS',
-			);
-			$args['meta_query'] = $meta_query;
+			$args['meta_query'] = $this->add_hide_clauses( $args['meta_query'] ?? array(), array( self::META_PREFIX . 'recent_posts' ) ); // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
 			return $args;
+		}
+
+		/**
+		 * Add NOT EXISTS clauses for the given hide keys to a meta query.
+		 *
+		 * The existing query is nested under an AND relation so an incoming
+		 * 'relation' => 'OR' cannot turn the hide clauses into alternatives.
+		 * Keys the query already enforces are skipped, e.g. a Query Loop block
+		 * query filtered again by pre_get_posts.
+		 *
+		 * @param mixed    $existing  Existing meta_query value.
+		 * @param string[] $meta_keys Hide meta keys that must not exist.
+		 * @return array
+		 */
+		private function add_hide_clauses( $existing, array $meta_keys ) {
+			$hide = array();
+			foreach ( $meta_keys as $key ) {
+				if ( $this->has_hide_clause( $existing, $key ) ) {
+					continue;
+				}
+
+				$hide[] = array(
+					'key'     => $key,
+					'compare' => self::META_COMPARE_NOT_EXISTS,
+				);
+			}
+
+			if ( empty( $existing ) ) {
+				return $hide;
+			}
+
+			if ( empty( $hide ) ) {
+				return (array) $existing;
+			}
+
+			return array(
+				'relation' => 'AND',
+				$existing,
+				$hide,
+			);
+		}
+
+		/**
+		 * Whether a meta query already enforces a NOT EXISTS clause for a key.
+		 *
+		 * Only AND groups are searched, since a clause inside an OR group does
+		 * not exclude anything on its own.
+		 *
+		 * @param mixed  $meta_query Meta query or nested clause group.
+		 * @param string $key        Hide meta key.
+		 * @return bool
+		 */
+		private function has_hide_clause( $meta_query, $key ) {
+			if ( ! is_array( $meta_query ) || 'AND' !== strtoupper( $meta_query['relation'] ?? 'AND' ) ) {
+				return false;
+			}
+
+			foreach ( $meta_query as $clause ) {
+				if ( ! is_array( $clause ) ) {
+					continue;
+				}
+				if ( isset( $clause['key'] ) ) {
+					if ( $key === $clause['key'] && self::META_COMPARE_NOT_EXISTS === ( $clause['compare'] ?? '' ) ) {
+						return true;
+					}
+				} elseif ( $this->has_hide_clause( $clause, $key ) ) {
+					return true;
+				}
+			}
+
+			return false;
 		}
 
 		/**
@@ -291,14 +380,7 @@ if ( ! class_exists( 'PTT_Post_Visibility' ) ) {
 				return;
 			}
 
-			$meta_query = (array) $query->get( 'meta_query' );
-			foreach ( $meta_keys as $key ) {
-				$meta_query[] = array(
-					'key'     => $key,
-					'compare' => 'NOT EXISTS',
-				);
-			}
-			$query->set( 'meta_query', $meta_query );
+			$query->set( 'meta_query', $this->add_hide_clauses( $query->get( 'meta_query' ), $meta_keys ) );
 		}
 
 		/**
@@ -335,14 +417,7 @@ if ( ! class_exists( 'PTT_Post_Visibility' ) ) {
 				$keys[] = self::META_PREFIX . 'feeds';
 			}
 
-			$meta_query = isset( $query['meta_query'] ) ? (array) $query['meta_query'] : array();
-			foreach ( $keys as $key ) {
-				$meta_query[] = array(
-					'key'     => $key,
-					'compare' => 'NOT EXISTS',
-				);
-			}
-			$query['meta_query'] = $meta_query;
+			$query['meta_query'] = $this->add_hide_clauses( $query['meta_query'] ?? array(), $keys ); // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
 
 			return $query;
 		}
@@ -397,12 +472,7 @@ if ( ! class_exists( 'PTT_Post_Visibility' ) ) {
 			if ( 'edit' === $request->get_param( 'context' ) ) {
 				return $args;
 			}
-			$meta_query         = isset( $args['meta_query'] ) ? (array) $args['meta_query'] : array();
-			$meta_query[]       = array(
-				'key'     => self::META_PREFIX . 'rest_api',
-				'compare' => 'NOT EXISTS',
-			);
-			$args['meta_query'] = $meta_query;
+			$args['meta_query'] = $this->add_hide_clauses( $args['meta_query'] ?? array(), array( self::META_PREFIX . 'rest_api' ) ); // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
 			return $args;
 		}
 	}

@@ -9,7 +9,7 @@
  * Author URI:        https://www.krishaweb.com/
  * Text Domain:       post-type-transfer
  * Domain Path:       /languages
- * Version:           1.6
+ * Version:           1.7
  * License:           GPLv3 or later
  * License URI:       http://www.gnu.org/licenses/gpl-3.0.html
  *
@@ -19,7 +19,7 @@
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
-define( 'POST_TYPE_TRANSFER_VERSION', '1.6' );
+define( 'POST_TYPE_TRANSFER_VERSION', '1.7' );
 require_once plugin_dir_path( __FILE__ ) . 'admin/class-post-type-transfer.php';
 require_once plugin_dir_path( __FILE__ ) . 'admin/class-ptt-quick-edit.php';
 require_once plugin_dir_path( __FILE__ ) . 'admin/class-ptt-review-notice.php';
@@ -28,14 +28,6 @@ require_once plugin_dir_path( __FILE__ ) . 'admin/class-ptt-csv-exporter.php';
 require_once plugin_dir_path( __FILE__ ) . 'admin/class-ptt-csv-importer.php';
 require_once plugin_dir_path( __FILE__ ) . 'lib/block/class-ptt-gutenberg-metabox.php';
 require_once plugin_dir_path( __FILE__ ) . 'admin/class-ptt-post-visibility.php';
-
-/**
- * Load plugin textdomain.
- */
-function ptt_textdomain() {
-	load_plugin_textdomain( 'post-type-transfer', false, basename( __DIR__ ) . '/languages' );
-}
-add_action( 'plugins_loaded', 'ptt_textdomain' );
 
 /**
  * Plugin activate hook.

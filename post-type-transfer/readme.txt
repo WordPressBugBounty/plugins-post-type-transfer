@@ -2,8 +2,8 @@
 Contributors: dilipbheda, krishaweb, dhruvang21, gulamdastgir04
 Tags: post order, post import, ACF fields, post type, post transfer
 Requires at least: 6.6
-Tested up to: 7.0
-Stable tag: 1.6
+Tested up to: 7.1
+Stable tag: 1.7
 Copyright: (c) 2012-2026 KrishaWeb Technologies PVT LTD
 License: GPLv3 or later
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
@@ -201,6 +201,15 @@ Parameters:
 - `$url` (string): Original image URL.
 - `$post_id` (int): Post ID.
 
+= How can I disable the post visibility feature? =
+
+Use the `ptt_enable_post_visibility` filter and return `false` to turn off the visibility meta box and all of its frontend and REST API query filtering. This is useful if you only use the plugin to transfer posts.
+
+`add_filter( 'ptt_enable_post_visibility', '__return_false' );`
+
+Parameters:
+- `$enabled` (bool): Whether post visibility is enabled. Default `true`.
+
 = Where can I get support? =
 
 You can request help through the WordPress.org support forum or contact us directly at <a href="mailto:support@krishaweb.com">[support@krishaweb.com](mailto:support@krishaweb.com)</a>.
@@ -211,6 +220,12 @@ You can request help through the WordPress.org support forum or contact us direc
 2. Shows quick edit option.
 
 == Changelog ==
+= 1.7 =
+* Fixed: Post visibility filtering returned all posts when a query used an OR meta_query relation
+* Add `ptt_enable_post_visibility` filter to disable the post visibility feature
+* Fixed: Duplicate post visibility meta join in Query Loop block queries
+* Tested up to 7.1
+
 = 1.6 =
 * Tested up to 7.0
 * Add import/export feature

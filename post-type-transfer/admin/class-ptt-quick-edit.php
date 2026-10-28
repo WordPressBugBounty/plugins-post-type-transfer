@@ -5,6 +5,10 @@
  * @package Post_Type_Transfer
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 // If check class exists or not.
 if ( ! class_exists( 'PTT_Quick_Edit' ) ) {
 	/**
@@ -55,13 +59,10 @@ if ( ! class_exists( 'PTT_Quick_Edit' ) ) {
 			?>
 			<fieldset class="inline-edit-col-ptt">
 				<div id="pts_quick_edit" class="inline-edit-group wp-clearfix">
-					<label class="alignleft">
-						<span class="title"><?php esc_html_e( 'Post Type', 'post-type-transfer' ); ?></span>
-						<?php
-							wp_nonce_field( 'transfer-post-type', 'ptt-post-types' );
-							$this->ptt_select_box();
-						?>
-					</label>
+					<?php
+						wp_nonce_field( 'transfer-post-type', 'ptt-post-types' );
+						$this->ptt_select_box();
+					?>
 				</div>
 			</fieldset>
 			<?php
@@ -90,6 +91,8 @@ if ( ! class_exists( 'PTT_Quick_Edit' ) ) {
 				<span data-post-type="<?php echo esc_attr( $post_type->name ); ?>"><?php echo esc_html( $post_type->labels->singular_name ); ?></span>
 					<?php
 					break;
+				default:
+					break;
 			}
 		}
 
@@ -104,7 +107,13 @@ if ( ! class_exists( 'PTT_Quick_Edit' ) ) {
 				return;
 			}
 			// Enqueue quick edit JS.
-			wp_enqueue_script( 'ptt-quick-edit', plugin_dir_url( __FILE__ ) . 'assets/js/post-type-transfer-quickedit.js', array( 'jquery' ), POST_TYPE_TRANSFER_VERSION, true );
+			wp_enqueue_script(
+				'ptt-quick-edit',
+				plugin_dir_url( __FILE__ ) . 'assets/js/post-type-transfer-quickedit.js',
+				array( 'jquery' ),
+				POST_TYPE_TRANSFER_VERSION,
+				true
+			);
 			wp_enqueue_style( 'ptt-quick-edit', plugin_dir_url( __FILE__ ) . 'assets/css/post-type-transfer-quickedit.css', array(), POST_TYPE_TRANSFER_VERSION );
 		}
 
@@ -121,33 +130,36 @@ if ( ! class_exists( 'PTT_Quick_Edit' ) ) {
 			// Exclude post data.
 			$exclude_post_data = Post_Type_Transfer::ptt_exclude_post_type( $get_all_post_types );
 			?>
-			<select name="post_type_transfer_types" id="post_type_transfer_types">
-				<?php
-				// Maybe include "No Change" option for bulk.
-				if ( true === $bulk ) :
-					?>
-					<option value="-1"><?php esc_html_e( '&mdash; No Change &mdash;', 'post-type-transfer' ); ?></option>
+			<label class="alignleft">
+				<span class="title"><?php esc_html_e( 'Post Type', 'post-type-transfer' ); ?></span>
+				<select name="post_type_transfer_types" id="post_type_transfer_types">
 					<?php
-				endif;
-
-				// Loop through post types.
-				foreach ( $exclude_post_data as $post_type_key => $post_types ) :
-					// Skip if user cannot publish this type of post.
-					if ( ! current_user_can( $post_types->cap->publish_posts ) ) :
-						continue;
+					// Maybe include "No Change" option for bulk.
+					if ( true === $bulk ) :
+						?>
+						<option value="-1"><?php esc_html_e( '&mdash; No Change &mdash;', 'post-type-transfer' ); ?></option>
+						<?php
 					endif;
+
+					// Loop through post types.
+					foreach ( $exclude_post_data as $post_type_key => $post_types ) :
+						// Skip if user cannot publish this type of post.
+						if ( ! current_user_can( $post_types->cap->publish_posts ) ) :
+							continue;
+						endif;
+						?>
+						<option value="<?php echo esc_attr( $post_types->name ); ?>"
+						<?php
+						if ( false === $bulk ) {
+							selected( $post_type, $post_type_key ); }
+						?>
+						><?php echo esc_html( $post_types->labels->singular_name ); ?>
+						</option>
+						<?php
+					endforeach;
 					?>
-					<option value="<?php echo esc_attr( $post_types->name ); ?>" 
-					<?php
-					if ( false === $bulk ) {
-						selected( $post_type, $post_type_key ); }
-					?>
-					><?php echo esc_html( $post_types->labels->singular_name ); ?>
-					</option>
-					<?php
-				endforeach;
-				?>
-			</select>
+				</select>
+			</label>
 			<?php
 		}
 	}

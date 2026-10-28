@@ -5,6 +5,10 @@
  * @package Post_Type_Transfer
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 // If check class exist or not.
 if ( ! class_exists( 'PTT_Gutenberg_Metabox' ) ) {
 	/**
@@ -43,7 +47,13 @@ if ( ! class_exists( 'PTT_Gutenberg_Metabox' ) ) {
 		public function ptt_gutenberg_editor_enqueue() {
 			wp_enqueue_style( 'ptt-gutenberg', plugin_dir_url( __FILE__ ) . 'css/style.css', array(), POST_TYPE_TRANSFER_VERSION );
 			wp_enqueue_script( 'ptt-gutenberg', plugin_dir_url( __FILE__ ) . 'js/block.js', array( 'jquery', 'wp-blocks' ), POST_TYPE_TRANSFER_VERSION, true );
-			wp_enqueue_script( 'jquery-sweetalert', plugin_dir_url( __FILE__ ) . 'js/sweetalert.min.js', array( 'jquery', 'wp-blocks' ), POST_TYPE_TRANSFER_VERSION, true );
+			wp_enqueue_script(
+				'jquery-sweetalert',
+				plugin_dir_url( __FILE__ ) . 'js/sweetalert.min.js',
+				array( 'jquery', 'wp-blocks' ),
+				POST_TYPE_TRANSFER_VERSION,
+				true
+			);
 		}
 	}
 }

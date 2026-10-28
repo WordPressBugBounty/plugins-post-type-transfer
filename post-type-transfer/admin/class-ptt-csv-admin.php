@@ -172,7 +172,7 @@ if ( ! class_exists( 'PTT_CSV_Admin' ) ) {
 			$obj        = get_post_type_object( $post_type );
 			$type_label = $obj ? $obj->labels->singular_name : $post_type;
 			?>
-			<div id="ptt-import-modal" role="dialog" aria-modal="true" aria-labelledby="ptt-modal-title" aria-hidden="true">
+			<div id="ptt-import-modal" aria-modal="true" aria-labelledby="ptt-modal-title" aria-hidden="true">
 				<div id="ptt-modal-overlay" class="ptt-modal-overlay"></div>
 				<div class="ptt-modal-wrap">
 					<div class="ptt-modal-header">
@@ -201,8 +201,6 @@ if ( ! class_exists( 'PTT_CSV_Admin' ) ) {
 							<div
 								id="ptt-drop-zone"
 								class="ptt-drop-zone"
-								tabindex="0"
-								role="button"
 								aria-label="<?php esc_attr_e( 'Click or drag a CSV file here', 'post-type-transfer' ); ?>"
 							>
 								<input

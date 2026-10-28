@@ -1,17 +1,20 @@
-#wpbody-content .inline-edit-row .inline-edit-col-right .alignleft + .alignleft {
+#wpbody-content .inline-edit-row .inline-edit-col-right .alignleft+.alignleft {
 	float: right;
 }
+
 #post-type-select {
 	line-height: 2.5em;
 	margin-top: 3px;
 	display: none;
 }
+
 #post-type-select select#post_type_transfer_types {
 	margin-right: 2px;
 }
+
 #post-body .post-type-transfer::before {
 	content: '\f109';
-	font: 400 20px/1 dashicons;
+	font: 400 20px/1 dashicons, sans-serif;
 	speak: none;
 	display: inline-block;
 	padding: 0 2px 0 0;

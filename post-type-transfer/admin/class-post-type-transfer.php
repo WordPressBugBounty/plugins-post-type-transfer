@@ -5,6 +5,10 @@
  * @package Post_Type_Transfer
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 // If check class exists or not.
 if ( ! class_exists( 'Post_Type_Transfer' ) ) {
 	/**
@@ -75,7 +79,11 @@ if ( ! class_exists( 'Post_Type_Transfer' ) ) {
 							continue;
 							endif;
 						?>
-							<option value="<?php echo esc_attr( $post_type_values->name ); ?>" <?php selected( $post_type, $post_type_keys ); ?>><?php echo esc_html( $post_type_values->labels->singular_name ); ?>
+							<option
+								value="<?php echo esc_attr( $post_type_values->name ); ?>"
+								<?php selected( $post_type, $post_type_keys ); ?>
+							>
+								<?php echo esc_html( $post_type_values->labels->singular_name ); ?>
 							</option>
 					<?php } ?>
 					</select>
@@ -90,7 +98,9 @@ if ( ! class_exists( 'Post_Type_Transfer' ) ) {
 					printf(
 						/* translators: %s: link to ACF field groups */
 						esc_html__( 'Ensure the target post type supports the same ACF meta fields to avoid data loss. %s', 'post-type-transfer' ),
-						'<a href="' . esc_url( admin_url( 'edit.php?post_type=acf-field-group' ) ) . '" target="_blank">' . esc_html__( 'Manage Field Groups', 'post-type-transfer' ) . '</a>'
+						'<a href="'
+						. esc_url( admin_url( 'edit.php?post_type=acf-field-group' ) ) .
+						'" target="_blank">' . esc_html__( 'Manage Field Groups', 'post-type-transfer' ) . '</a>'
 					);
 					?>
 				</p>
